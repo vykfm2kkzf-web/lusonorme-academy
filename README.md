@@ -1,2 +1,2 @@
 # lusonorme-academy
-lusonoorme academy
+lusonorme academy
