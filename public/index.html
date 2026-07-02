@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lusonorme Academy</title>
+<style>
+/* ── RESET & BASE ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink:     #000000;
+  --red:     #DB3B3B;
+  --grey:    #D9D9D9;
+  --grey-t:  #888888;
+  --paper:   #F7F7F5;
+  --white:   #FFFFFF;
+  --success: #2D6A4F;
+  --wrong:   #9B2335;
+}
+html { font-size: 16px; }
+body {
+  font-family: Arial, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: Arial, sans-serif; }
+input { font-family: Arial, sans-serif; }
+
+/* ── HEADER ──────────────────────────────────────────────────────────────── */
+.site-header {
+  background: var(--white);
+  border-bottom: 2px solid var(--ink);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo {
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 0.06em;
+  color: var(--red);
+}
+.logo span {
+  color: var(--ink);
+  font-weight: 400;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  margin-left: 0.5rem;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.user-name {
+  font-size: 0.85rem;
+  color: var(--grey-t);
+}
+.btn-logout {
+  background: none;
+  border: 1px solid var(--grey);
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  color: var(--grey-t);
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-logout:hover { border-color: var(--ink); color: var(--ink); }
+
+/* ── MAIN LAYOUT ─────────────────────────────────────────────────────────── */
+.main-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* ── SCREENS ─────────────────────────────────────────────────────────────── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── LOGIN ───────────────────────────────────────────────────────────────── */
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+#login-screen.active { display: flex; }
+.login-box {
+  background: var(--white);
+  border: 1.5px solid var(--grey);
+  padding: 2.5rem 2.5rem 3rem;
+  width: 100%;
+  max-width: 400px;
+}
+.login-logo {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--red);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.25rem;
+}
+.login-sub {
+  font-size: 0.82rem;
+  color: var(--grey-t);
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--grey);
+}
+.form-group { margin-bottom: 1.25rem; }
+.form-group label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--grey-t);
+  margin-bottom: 0.4rem;
+}
+.form-group input {
+  width: 100%;
+  border: 1.5px solid var(--grey);
+  padding: 0.65rem 0.85rem;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--white);
+  transition: border-color 0.15s;
+}
+.form-group input:focus { outline: none; border-color: var(--ink); }
+.btn-primary {
+  width: 100%;
+  background: var(--ink);
+  color: var(--white);
+  border: none;
+  padding: 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background 0.15s;
+  margin-top: 0.5rem;
+}
+.btn-primary:hover { background: var(--red); }
+.login-error {
+  color: var(--wrong);
+  font-size: 0.82rem;
+  margin-top: 0.75rem;
+  display: none;
+}
+
+/* ── DASHBOARD ───────────────────────────────────────────────────────────── */
+.dash-welcome {
+  margin-bottom: 2rem;
+}
+.dash-welcome h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.dash-welcome p { font-size: 0.9rem; color: var(--grey-t); }
+
+.chapters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+.chapter-card {
+  background: var(--white);
+  border: 1.5px solid var(--grey);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+.chapter-card:hover {
+  border-color: var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.chapter-card.completed { border-left: 3px solid var(--success); }
+.chapter-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
+.chapter-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
+}
+.chapter-desc {
+  font-size: 0.8rem;
+  color: var(--grey-t);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+.chapter-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: var(--grey-t);
+}
+.chapter-progress-bar {
+  height: 3px;
+  background: var(--grey);
+  margin-top: 1rem;
+  position: relative;
+}
+.chapter-progress-fill {
+  height: 100%;
+  background: var(--red);
+  transition: width 0.4s;
+}
+.best-score-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--success);
+  color: var(--white);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+}
+
+/* ── CHAPTER VIEW ────────────────────────────────────────────────────────── */
+.chapter-header {
+  margin-bottom: 2rem;
+}
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 0.82rem;
+  color: var(--grey-t);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  padding: 0;
+  transition: color 0.15s;
+}
+.back-btn:hover { color: var(--ink); }
+.chapter-header h1 { font-size: 1.5rem; font-weight: 700; }
+.chapter-header p { font-size: 0.9rem; color: var(--grey-t); margin-top: 0.25rem; }
+
+.tabs {
+  display: flex;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 2rem;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--grey-t);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s;
+}
+.tab-btn.active {
+  color: var(--ink);
+  border-bottom-color: var(--red);
+}
+.tab-btn:hover { color: var(--ink); }
+
+/* ── CARDS ───────────────────────────────────────────────────────────────── */
+.cards-list { display: flex; flex-direction: column; gap: 1.25rem; }
+.card-item {
+  background: var(--white);
+  border: 1.5px solid var(--grey);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.card-item:hover { border-color: var(--ink); }
+.card-item.read { border-left: 3px solid var(--success); }
+.card-read-icon {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--grey);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+}
+.card-item.read .card-read-icon {
+  background: var(--success);
+  border-color: var(--success);
+  color: var(--white);
+}
+.card-info { flex: 1; }
+.card-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.25rem; }
+.card-source { font-size: 0.75rem; color: var(--red); }
+
+/* ── CARD MODAL ──────────────────────────────────────────────────────────── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+  overflow-y: auto;
+  padding: 2rem 1rem;
+}
+.modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+.modal-box {
+  background: var(--white);
+  width: 100%;
+  max-width: 680px;
+  padding: 2rem;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--grey-t);
+  line-height: 1;
+}
+.modal-close:hover { color: var(--ink); }
+.modal-source {
+  font-size: 0.75rem;
+  color: var(--red);
+  margin-bottom: 0.5rem;
+  font-style: italic;
+}
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--ink);
+}
+.modal-content { font-size: 0.9rem; line-height: 1.75; color: var(--ink); }
+.modal-content h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 1.25rem 0 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid var(--red);
+  display: inline-block;
+}
+.modal-content p { margin-bottom: 0.75rem; }
+.modal-content ul { padding-left: 1.25rem; margin-bottom: 0.75rem; }
+.modal-content li { margin-bottom: 0.4rem; }
+.modal-content strong { color: var(--ink); }
+.modal-content em { color: var(--grey-t); }
+.key-figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  background: var(--paper);
+  border-left: 3px solid var(--red);
+}
+.key-figure-item { }
+.key-figure-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--red);
+  line-height: 1.2;
+}
+.key-figure-label {
+  font-size: 0.72rem;
+  color: var(--grey-t);
+  line-height: 1.4;
+}
+.btn-mark-read {
+  margin-top: 1.5rem;
+  background: var(--ink);
+  color: var(--white);
+  border: none;
+  padding: 0.65rem 1.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background 0.15s;
+}
+.btn-mark-read:hover { background: var(--red); }
+.btn-mark-read.done { background: var(--success); cursor: default; }
+
+/* ── QUIZ ────────────────────────────────────────────────────────────────── */
+.quiz-wrapper { max-width: 680px; }
+.quiz-progress-bar {
+  height: 4px;
+  background: var(--grey);
+  margin-bottom: 2rem;
+}
+.quiz-progress-fill {
+  height: 100%;
+  background: var(--red);
+  transition: width 0.3s;
+}
+.quiz-counter {
+  font-size: 0.75rem;
+  color: var(--grey-t);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.quiz-difficulty {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid;
+}
+.quiz-difficulty.easy { color: var(--success); border-color: var(--success); }
+.quiz-difficulty.medium { color: var(--grey-t); border-color: var(--grey-t); }
+.quiz-difficulty.hard { color: var(--red); border-color: var(--red); }
+.quiz-question {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.45;
+  margin-bottom: 1.75rem;
+}
+.quiz-options { display: flex; flex-direction: column; gap: 0.6rem; }
+.quiz-option {
+  background: var(--white);
+  border: 1.5px solid var(--grey);
+  padding: 0.85rem 1.1rem;
+  text-align: left;
+  font-size: 0.9rem;
+  color: var(--ink);
+  transition: border-color 0.15s, background 0.15s;
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  width: 100%;
+}
+.quiz-option:hover:not(:disabled) { border-color: var(--ink); background: var(--paper); }
+.quiz-option:disabled { cursor: default; }
+.quiz-option.correct { border-color: var(--success); background: #e8f5ee; color: var(--success); }
+.quiz-option.wrong { border-color: var(--wrong); background: #fdecea; color: var(--wrong); }
+.option-letter {
+  font-weight: 700;
+  font-size: 0.75rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 1.5px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+.quiz-explanation {
+  display: none;
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem;
+  background: var(--paper);
+  border-left: 3px solid var(--red);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+.quiz-explanation.visible { display: block; }
+.quiz-explanation-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 0.4rem;
+}
+.quiz-source {
+  font-size: 0.72rem;
+  color: var(--grey-t);
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+.btn-next {
+  display: none;
+  margin-top: 1.25rem;
+  background: var(--ink);
+  color: var(--white);
+  border: none;
+  padding: 0.7rem 1.75rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background 0.15s;
+}
+.btn-next:hover { background: var(--red); }
+.btn-next.visible { display: inline-block; }
+
+/* ── QUIZ RESULTS ────────────────────────────────────────────────────────── */
+.quiz-result {
+  text-align: center;
+  padding: 2rem 0;
+}
+.result-score {
+  font-size: 4.5rem;
+  font-weight: 700;
+  color: var(--red);
+  line-height: 1;
+}
+.result-total { font-size: 1rem; color: var(--grey-t); margin-bottom: 0.5rem; }
+.result-label { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.75rem; }
+.result-comment { font-size: 0.9rem; color: var(--grey-t); max-width: 440px; margin: 0 auto 2rem; line-height: 1.65; }
+.result-breakdown {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--grey);
+  border-bottom: 1px solid var(--grey);
+}
+.breakdown-num { font-size: 2rem; font-weight: 700; display: block; }
+.breakdown-num.good { color: var(--success); }
+.breakdown-num.bad { color: var(--wrong); }
+.breakdown-label { font-size: 0.72rem; color: var(--grey-t); text-transform: uppercase; letter-spacing: 0.08em; }
+.result-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.btn-secondary {
+  background: none;
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  padding: 0.65rem 1.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-secondary:hover { background: var(--ink); color: var(--white); }
+
+/* ── ADMIN ───────────────────────────────────────────────────────────────── */
+.admin-section { margin-bottom: 2.5rem; }
+.admin-section h2 {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--grey-t);
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--red);
+  margin-bottom: 1.25rem;
+}
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.users-table th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--grey-t);
+  padding: 0.6rem 0.75rem;
+  border-bottom: 2px solid var(--ink);
+}
+.users-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--grey);
+}
+.users-table tr:hover td { background: var(--paper); }
+
+.admin-form {
+  background: var(--white);
+  border: 1.5px solid var(--grey);
+  padding: 1.5rem;
+  max-width: 560px;
+}
+.admin-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.admin-form .form-group { margin-bottom: 1rem; }
+.admin-form label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--grey-t);
+  margin-bottom: 0.35rem;
+}
+.admin-form input, .admin-form select, .admin-form textarea {
+  width: 100%;
+  border: 1.5px solid var(--grey);
+  padding: 0.55rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--ink);
+  background: var(--white);
+  font-family: Arial, sans-serif;
+}
+.admin-form textarea { min-height: 100px; resize: vertical; }
+.admin-form input:focus, .admin-form select:focus, .admin-form textarea:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+.btn-admin {
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  padding: 0.65rem 1.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background 0.15s;
+}
+.btn-admin:hover { background: var(--ink); }
+.success-msg { color: var(--success); font-size: 0.82rem; margin-top: 0.5rem; display: none; }
+
+/* ── NAV TABS (admin) ────────────────────────────────────────────────────── */
+.admin-nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--ink);
+}
+.admin-nav button {
+  background: none;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--grey-t);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+.admin-nav button.active { color: var(--ink); border-bottom-color: var(--red); }
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .site-header { padding: 0 1rem; }
+  .main-content { padding: 1.5rem 1rem 3rem; }
+  .chapters-grid { grid-template-columns: 1fr; }
+  .admin-form .form-row { grid-template-columns: 1fr; }
+  .result-breakdown { gap: 1.5rem; }
+  .quiz-question { font-size: 1rem; }
+  .login-box { padding: 1.75rem 1.25rem 2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER (hidden until logged in) -->
+<header class="site-header" id="site-header" style="display:none">
+  <div class="logo">LUSONORME <span>Academy</span></div>
+  <div class="header-right">
+    <span class="user-name" id="header-username"></span>
+    <button class="btn-logout" onclick="logout()">Déconnexion</button>
+    <button class="btn-logout" id="admin-btn" style="display:none;border-color:var(--red);color:var(--red)" onclick="showScreen('admin')">Admin</button>
+  </div>
+</header>
+
+<!-- ── LOGIN ──────────────────────────────────────────────────────────────── -->
+<div id="login-screen" class="screen active">
+  <div class="login-box">
+    <div class="login-logo">LUSONORME</div>
+    <div class="login-sub">Academy — Marché immobilier portugais</div>
+    <div class="form-group">
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" placeholder="votre@email.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label for="login-password">Mot de passe</label>
+      <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-primary" onclick="login()">Accéder à l'Academy</button>
+    <div class="login-error" id="login-error">Identifiants incorrects. Vérifiez votre email et mot de passe.</div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ──────────────────────────────────────────────────────────── -->
+<div id="dashboard-screen" class="screen">
+  <div class="main-content">
+    <div class="dash-welcome">
+      <h1 id="dash-greeting">Bonjour</h1>
+      <p>Marché immobilier portugais · Mécanismes, enjeux, indicateurs</p>
+    </div>
+    <div class="chapters-grid" id="chapters-grid">
+      <!-- dynamically populated -->
+    </div>
+  </div>
+</div>
+
+<!-- ── CHAPTER VIEW ───────────────────────────────────────────────────────── -->
+<div id="chapter-screen" class="screen">
+  <div class="main-content">
+    <button class="back-btn" onclick="showScreen('dashboard')">← Retour aux chapitres</button>
+    <div class="chapter-header">
+      <h1 id="chapter-title"></h1>
+      <p id="chapter-desc"></p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('cards')">Fiches</button>
+      <button class="tab-btn" onclick="switchTab('quiz')">Quiz</button>
+    </div>
+
+    <!-- Cards tab -->
+    <div id="tab-cards">
+      <div class="cards-list" id="cards-list"></div>
+    </div>
+
+    <!-- Quiz tab -->
+    <div id="tab-quiz" style="display:none">
+      <div class="quiz-wrapper" id="quiz-wrapper">
+        <!-- dynamically populated -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADMIN ──────────────────────────────────────────────────────────────── -->
+<div id="admin-screen" class="screen">
+  <div class="main-content">
+    <button class="back-btn" onclick="showScreen('dashboard')">← Retour au tableau de bord</button>
+    <h1 style="font-size:1.5rem;font-weight:700;margin-bottom:1.5rem">Administration</h1>
+    <div class="admin-nav">
+      <button class="active" onclick="showAdminTab('users')">Utilisateurs</button>
+      <button onclick="showAdminTab('add-card')">Ajouter une fiche</button>
+      <button onclick="showAdminTab('add-question')">Ajouter une question</button>
+    </div>
+
+    <!-- Users tab -->
+    <div id="admin-users">
+      <div class="admin-section">
+        <h2>Utilisateurs actifs</h2>
+        <table class="users-table" id="users-table">
+          <thead><tr>
+            <th>Nom</th><th>Email</th><th>Rôle</th>
+            <th>Fiches lues</th><th>Quiz réalisés</th><th>Score moyen</th><th>Dernière connexion</th>
+          </tr></thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+      <div class="admin-section">
+        <h2>Ajouter un utilisateur</h2>
+        <div class="admin-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Prénom et nom</label>
+              <input type="text" id="new-user-name" placeholder="Marie Dupont">
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="new-user-email" placeholder="marie@lusonorme.com">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Mot de passe temporaire</label>
+              <input type="text" id="new-user-password" placeholder="Academy2026!">
+            </div>
+            <div class="form-group">
+              <label>Rôle</label>
+              <select id="new-user-role">
+                <option value="user">Utilisateur</option>
+                <option value="admin">Administrateur</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-admin" onclick="createUser()">Créer l'utilisateur</button>
+          <div class="success-msg" id="user-success">Utilisateur créé avec succès.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add card tab -->
+    <div id="admin-add-card" style="display:none">
+      <div class="admin-section">
+        <h2>Nouvelle fiche pédagogique</h2>
+        <div class="admin-form" style="max-width:100%">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Chapitre</label>
+              <select id="card-chapter" style="width:100%"></select>
+            </div>
+            <div class="form-group">
+              <label>Position (ordre)</label>
+              <input type="number" id="card-position" value="10">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Titre de la fiche</label>
+            <input type="text" id="card-title" placeholder="ex: Le déficit structurel de logements">
+          </div>
+          <div class="form-group">
+            <label>Source</label>
+            <input type="text" id="card-source" placeholder="ex: Chave na Mão · 26 juin 2026 · Juliana Simões">
+          </div>
+          <div class="form-group">
+            <label>Chiffres clés (JSON) — ex: [{"label":"Prix moyen","value":"262 939 €"}]</label>
+            <textarea id="card-figures" placeholder='[{"label": "...", "value": "..."}]' style="min-height:60px"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Contenu (HTML)</label>
+            <textarea id="card-content" style="min-height:200px" placeholder="<p>Texte...</p><h3>Titre de section</h3><p>...</p>"></textarea>
+          </div>
+          <button class="btn-admin" onclick="createCard()">Publier la fiche</button>
+          <div class="success-msg" id="card-success">Fiche créée avec succès.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add question tab -->
+    <div id="admin-add-question" style="display:none">
+      <div class="admin-section">
+        <h2>Nouvelle question de quiz</h2>
+        <div class="admin-form" style="max-width:100%">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Chapitre</label>
+              <select id="q-chapter" style="width:100%"></select>
+            </div>
+            <div class="form-group">
+              <label>Difficulté</label>
+              <select id="q-difficulty">
+                <option value="easy">Facile</option>
+                <option value="medium" selected>Moyen</option>
+                <option value="hard">Difficile</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Question</label>
+            <textarea id="q-question" style="min-height:80px" placeholder="Formulez votre question..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Option A</label>
+            <input type="text" id="q-opt-0">
+          </div>
+          <div class="form-group">
+            <label>Option B</label>
+            <input type="text" id="q-opt-1">
+          </div>
+          <div class="form-group">
+            <label>Option C</label>
+            <input type="text" id="q-opt-2">
+          </div>
+          <div class="form-group">
+            <label>Option D</label>
+            <input type="text" id="q-opt-3">
+          </div>
+          <div class="form-group">
+            <label>Bonne réponse</label>
+            <select id="q-correct">
+              <option value="0">A</option>
+              <option value="1">B</option>
+              <option value="2">C</option>
+              <option value="3">D</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Explication (affichée après la réponse)</label>
+            <textarea id="q-explanation" style="min-height:100px" placeholder="Expliquez pourquoi c'est la bonne réponse, avec le mécanisme derrière..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Source</label>
+            <input type="text" id="q-source" placeholder="ex: Chave na Mão · 26 juin 2026 · Juliana Simões">
+          </div>
+          <button class="btn-admin" onclick="createQuestion()">Publier la question</button>
+          <div class="success-msg" id="question-success">Question créée avec succès.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CARD MODAL -->
+<div class="modal-overlay" id="card-modal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeCardModal()">✕</button>
+    <div class="modal-source" id="modal-source"></div>
+    <h2 class="modal-title" id="modal-title"></h2>
+    <div class="key-figures" id="modal-figures" style="display:none"></div>
+    <div class="modal-content" id="modal-content"></div>
+    <button class="btn-mark-read" id="btn-mark-read" onclick="markRead()">✓ Marquer comme lu</button>
+  </div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+let currentUser = null;
+let currentChapter = null;
+let currentChapterData = null;
+let currentCardId = null;
+let quizQuestions = [];
+let quizCurrentIndex = 0;
+let quizAnswers = [];
+let quizAnswered = false;
+let chapters = [];
+
+// ── AUTH ──────────────────────────────────────────────────────────────────
+async function login() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const err = document.getElementById('login-error');
+  err.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) { err.style.display = 'block'; return; }
+
+    currentUser = data.user;
+    document.getElementById('header-username').textContent = currentUser.name;
+    document.getElementById('site-header').style.display = 'flex';
+    if (currentUser.role === 'admin') document.getElementById('admin-btn').style.display = 'inline-block';
+    await loadDashboard();
+    showScreen('dashboard');
+  } catch {
+    err.style.display = 'block';
+  }
+}
+
+async function logout() {
+  await fetch('/api/auth/logout', { method: 'POST' });
+  currentUser = null;
+  document.getElementById('site-header').style.display = 'none';
+  showScreen('login');
+}
+
+// Allow Enter key on login
+document.getElementById('login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') login();
+});
+document.getElementById('login-email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') login();
+});
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const screen = document.getElementById(`${name}-screen`);
+  if (screen) screen.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
+  document.getElementById('dash-greeting').textContent = `${greet}, ${currentUser.name.split(' ')[0]}`;
+
+  try {
+    const res = await fetch('/api/me/progress');
+    const data = await res.json();
+    chapters = data.chapters;
+    renderChapters(chapters);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function renderChapters(chapters) {
+  const grid = document.getElementById('chapters-grid');
+  grid.innerHTML = chapters.map(ch => {
+    const pct = ch.total_cards > 0 ? Math.round((ch.cards_read / ch.total_cards) * 100) : 0;
+    const bestScore = ch.best_score_pct ? `${ch.best_score_pct}%` : null;
+    return `
+    <div class="chapter-card ${pct === 100 ? 'completed' : ''}" onclick="openChapter('${ch.slug}')">
+      ${bestScore ? `<div class="best-score-badge">Quiz ${bestScore}</div>` : ''}
+      <div class="chapter-icon">${ch.icon}</div>
+      <div class="chapter-title">${ch.title}</div>
+      <div class="chapter-desc">${ch.description || ''}</div>
+      <div class="chapter-meta">
+        <span>${ch.card_count} fiche${ch.card_count > 1 ? 's' : ''}</span>
+        <span>${ch.question_count} question${ch.question_count > 1 ? 's' : ''}</span>
+        <span>${ch.cards_read}/${ch.total_cards} lue${ch.cards_read > 1 ? 's' : ''}</span>
+      </div>
+      <div class="chapter-progress-bar">
+        <div class="chapter-progress-fill" style="width:${pct}%"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── CHAPTER ───────────────────────────────────────────────────────────────
+async function openChapter(slug) {
+  try {
+    const res = await fetch(`/api/chapters/${slug}/cards`);
+    const data = await res.json();
+    currentChapter = slug;
+    currentChapterData = data;
+
+    document.getElementById('chapter-title').textContent = `${data.chapter.icon} ${data.chapter.title}`;
+    document.getElementById('chapter-desc').textContent = data.chapter.description || '';
+
+    renderCards(data.cards);
+    switchTab('cards');
+    showScreen('chapter');
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function renderCards(cards) {
+  const list = document.getElementById('cards-list');
+  list.innerHTML = cards.map(card => `
+    <div class="card-item ${card.read_at ? 'read' : ''}" onclick="openCard(${card.id})">
+      <div class="card-read-icon">${card.read_at ? '✓' : ''}</div>
+      <div class="card-info">
+        <div class="card-title">${card.title}</div>
+        ${card.source ? `<div class="card-source">${card.source}</div>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', (i === 0 && tab === 'cards') || (i === 1 && tab === 'quiz'));
+  });
+  document.getElementById('tab-cards').style.display = tab === 'cards' ? 'block' : 'none';
+  document.getElementById('tab-quiz').style.display = tab === 'quiz' ? 'block' : 'none';
+  if (tab === 'quiz') loadQuiz();
+}
+
+// ── CARD MODAL ────────────────────────────────────────────────────────────
+function openCard(cardId) {
+  const card = currentChapterData.cards.find(c => c.id === cardId);
+  if (!card) return;
+
+  currentCardId = cardId;
+  document.getElementById('modal-source').textContent = card.source || '';
+  document.getElementById('modal-title').textContent = card.title;
+  document.getElementById('modal-content').innerHTML = card.content;
+
+  const figures = card.key_figures || [];
+  const figEl = document.getElementById('modal-figures');
+  if (figures.length) {
+    figEl.style.display = 'grid';
+    figEl.innerHTML = figures.map(f => `
+      <div class="key-figure-item">
+        <div class="key-figure-value">${f.value}</div>
+        <div class="key-figure-label">${f.label}</div>
+      </div>`).join('');
+  } else {
+    figEl.style.display = 'none';
+  }
+
+  const btn = document.getElementById('btn-mark-read');
+  if (card.read_at) {
+    btn.textContent = '✓ Fiche lue';
+    btn.classList.add('done');
+  } else {
+    btn.textContent = '✓ Marquer comme lu';
+    btn.classList.remove('done');
+  }
+
+  document.getElementById('card-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCardModal() {
+  document.getElementById('card-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('card-modal')) closeCardModal();
+}
+
+async function markRead() {
+  const btn = document.getElementById('btn-mark-read');
+  if (btn.classList.contains('done')) return;
+
+  try {
+    await fetch('/api/cards/read', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ card_id: currentCardId })
+    });
+    btn.textContent = '✓ Fiche lue';
+    btn.classList.add('done');
+
+    // Update local state
+    const card = currentChapterData.cards.find(c => c.id === currentCardId);
+    if (card) card.read_at = new Date().toISOString();
+    renderCards(currentChapterData.cards);
+  } catch (e) { console.error(e); }
+}
+
+// ── QUIZ ──────────────────────────────────────────────────────────────────
+async function loadQuiz() {
+  const wrapper = document.getElementById('quiz-wrapper');
+  wrapper.innerHTML = '<p style="color:var(--grey-t);font-size:0.9rem">Chargement du quiz…</p>';
+
+  try {
+    const res = await fetch(`/api/chapters/${currentChapter}/quiz`);
+    const data = await res.json();
+
+    if (!data.questions?.length) {
+      wrapper.innerHTML = '<p style="color:var(--grey-t);font-size:0.9rem">Aucune question disponible pour ce chapitre pour l\'instant.</p>';
+      return;
+    }
+
+    quizQuestions = data.questions;
+    quizCurrentIndex = 0;
+    quizAnswers = [];
+    renderQuizQuestion();
+  } catch (e) {
+    wrapper.innerHTML = '<p style="color:var(--wrong)">Erreur de chargement du quiz.</p>';
+  }
+}
+
+function renderQuizQuestion() {
+  const q = quizQuestions[quizCurrentIndex];
+  const letters = ['A', 'B', 'C', 'D'];
+  const options = JSON.parse(q.options);
+  const pct = ((quizCurrentIndex) / quizQuestions.length) * 100;
+
+  const diffLabels = { easy: 'Facile', medium: 'Intermédiaire', hard: 'Avancé' };
+  const wrapper = document.getElementById('quiz-wrapper');
+  wrapper.innerHTML = `
+    <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${pct}%"></div></div>
+    <div class="quiz-counter">Question ${quizCurrentIndex + 1} / ${quizQuestions.length}</div>
+    <div class="quiz-difficulty ${q.difficulty}">${diffLabels[q.difficulty] || q.difficulty}</div>
+    <div class="quiz-question">${q.question}</div>
+    <div class="quiz-options">
+      ${options.map((opt, i) => `
+        <button class="quiz-option" onclick="selectAnswer(${i})" data-index="${i}">
+          <span class="option-letter">${letters[i]}</span>
+          <span>${opt}</span>
+        </button>`).join('')}
+    </div>
+    <div class="quiz-explanation" id="quiz-explanation">
+      <div class="quiz-explanation-label">Analyse</div>
+      <div id="quiz-explanation-text"></div>
+      ${q.source ? `<div class="quiz-source">Source : ${q.source}</div>` : ''}
+    </div>
+    <button class="btn-next" id="btn-next" onclick="nextQuizQuestion()">
+      ${quizCurrentIndex < quizQuestions.length - 1 ? 'Question suivante →' : 'Voir mon résultat →'}
+    </button>`;
+  quizAnswered = false;
+}
+
+async function selectAnswer(selectedIndex) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+
+  const q = quizQuestions[quizCurrentIndex];
+  const btns = document.querySelectorAll('.quiz-option');
+
+  // Ask server for correct answer by submitting just this question
+  const res = await fetch(`/api/chapters/${currentChapter}/quiz`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ answers: [{ question_id: q.id, selected_index: selectedIndex }] })
+  });
+  const result = await res.json();
+  const ans = result.answers[0];
+
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === ans.correct_index) btn.classList.add('correct');
+    else if (i === selectedIndex && !ans.correct) btn.classList.add('wrong');
+  });
+
+  quizAnswers.push({ question_id: q.id, selected_index: selectedIndex, correct: ans.correct });
+
+  document.getElementById('quiz-explanation-text').textContent = ans.explanation;
+  document.getElementById('quiz-explanation').classList.add('visible');
+  document.getElementById('btn-next').classList.add('visible');
+}
+
+function nextQuizQuestion() {
+  quizCurrentIndex++;
+  if (quizCurrentIndex < quizQuestions.length) {
+    renderQuizQuestion();
+  } else {
+    showQuizResult();
+  }
+}
+
+function showQuizResult() {
+  const score = quizAnswers.filter(a => a.correct).length;
+  const total = quizQuestions.length;
+  const pct = Math.round((score / total) * 100);
+
+  let label, comment;
+  if (pct >= 80) { label = 'Excellente maîtrise'; comment = 'Vous maîtrisez les mécanismes et les chiffres clés de ce chapitre. Continuez sur les autres.'; }
+  else if (pct >= 60) { label = 'Bonne connaissance'; comment = 'Les grandes dynamiques sont assimilées. Quelques mécanismes de second niveau méritent d\'être approfondis via les fiches.'; }
+  else { label = 'À approfondir'; comment = 'Relisez les fiches du chapitre avant de repasser le quiz. Chaque question pointe une notion clé à consolider.'; }
+
+  const wrapper = document.getElementById('quiz-wrapper');
+  wrapper.innerHTML = `
+    <div class="quiz-result">
+      <div class="result-score">${score}</div>
+      <div class="result-total">/ ${total}</div>
+      <div class="result-label">${label}</div>
+      <div class="result-comment">${comment}</div>
+      <div class="result-breakdown">
+        <div class="breakdown-item">
+          <span class="breakdown-num good">${score}</span>
+          <span class="breakdown-label">Correctes</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-num bad">${total - score}</span>
+          <span class="breakdown-label">Incorrectes</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-num" style="color:var(--red)">${pct}%</span>
+          <span class="breakdown-label">Taux</span>
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-secondary" onclick="loadQuiz()">Recommencer le quiz</button>
+        <button class="btn-secondary" onclick="switchTab('cards')">Relire les fiches</button>
+        <button class="btn-primary" style="width:auto;padding:0.65rem 1.5rem" onclick="showScreen('dashboard')">Autres chapitres</button>
+      </div>
+    </div>`;
+
+  // Refresh dashboard data in background
+  loadDashboard();
+}
+
+// ── ADMIN ─────────────────────────────────────────────────────────────────
+function showAdminTab(tab) {
+  document.querySelectorAll('.admin-nav button').forEach(b => b.classList.remove('active'));
+  ['admin-users', 'admin-add-card', 'admin-add-question'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  document.getElementById(`admin-${tab}`).style.display = 'block';
+  event.target.classList.add('active');
+
+  if (tab === 'users') loadUsers();
+  if (tab === 'add-card' || tab === 'add-question') loadChapterSelects();
+}
+
+async function loadUsers() {
+  try {
+    const res = await fetch('/api/admin/users');
+    const data = await res.json();
+    const tbody = document.getElementById('users-tbody');
+    tbody.innerHTML = data.users.map(u => `
+      <tr>
+        <td><strong>${u.name}</strong></td>
+        <td>${u.email}</td>
+        <td>${u.role === 'admin' ? '<span style="color:var(--red);font-weight:700">Admin</span>' : 'Utilisateur'}</td>
+        <td>${u.cards_read || 0}</td>
+        <td>${u.quizzes_done || 0}</td>
+        <td>${u.avg_score ? u.avg_score + '%' : '—'}</td>
+        <td style="color:var(--grey-t);font-size:0.8rem">${u.last_login ? new Date(u.last_login).toLocaleDateString('fr-FR') : 'Jamais'}</td>
+      </tr>`).join('');
+  } catch (e) { console.error(e); }
+}
+
+async function loadChapterSelects() {
+  try {
+    const res = await fetch('/api/chapters');
+    const data = await res.json();
+    const opts = data.chapters.map(c => `<option value="${c.id}">${c.icon} ${c.title}</option>`).join('');
+    ['card-chapter', 'q-chapter'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = opts;
+    });
+  } catch (e) { console.error(e); }
+}
+
+async function createUser() {
+  const payload = {
+    name: document.getElementById('new-user-name').value,
+    email: document.getElementById('new-user-email').value,
+    password: document.getElementById('new-user-password').value,
+    role: document.getElementById('new-user-role').value
+  };
+  try {
+    const res = await fetch('/api/admin/users', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      document.getElementById('user-success').style.display = 'block';
+      setTimeout(() => document.getElementById('user-success').style.display = 'none', 3000);
+      loadUsers();
+    }
+  } catch (e) { console.error(e); }
+}
+
+async function createCard() {
+  let figures = [];
+  try { figures = JSON.parse(document.getElementById('card-figures').value || '[]'); } catch {}
+  const payload = {
+    chapter_id: parseInt(document.getElementById('card-chapter').value),
+    title: document.getElementById('card-title').value,
+    content: document.getElementById('card-content').value,
+    source: document.getElementById('card-source').value,
+    key_figures: figures,
+    position: parseInt(document.getElementById('card-position').value) || 10
+  };
+  try {
+    const res = await fetch('/api/admin/cards', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      document.getElementById('card-success').style.display = 'block';
+      setTimeout(() => document.getElementById('card-success').style.display = 'none', 3000);
+    }
+  } catch (e) { console.error(e); }
+}
+
+async function createQuestion() {
+  const options = ['q-opt-0','q-opt-1','q-opt-2','q-opt-3'].map(id => document.getElementById(id).value);
+  const payload = {
+    chapter_id: parseInt(document.getElementById('q-chapter').value),
+    question: document.getElementById('q-question').value,
+    options,
+    correct_index: parseInt(document.getElementById('q-correct').value),
+    explanation: document.getElementById('q-explanation').value,
+    difficulty: document.getElementById('q-difficulty').value,
+    source: document.getElementById('q-source').value
+  };
+  try {
+    const res = await fetch('/api/admin/questions', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      document.getElementById('question-success').style.display = 'block';
+      setTimeout(() => document.getElementById('question-success').style.display = 'none', 3000);
+    }
+  } catch (e) { console.error(e); }
+}
+</script>
+
+</body>
+</html>
